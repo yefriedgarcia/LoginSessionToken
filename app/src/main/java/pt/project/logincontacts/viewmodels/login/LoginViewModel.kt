@@ -6,14 +6,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import pt.project.crm_pruebatecnica.constants.Constants.Companion.ACCESS_KEY
 import pt.project.crm_pruebatecnica.dtos.auth.AuthData
-import pt.project.logincontacts.database.entities.PostsModel
-import pt.project.logincontacts.dtos.login_auth.LoginAuth
-import pt.project.logincontacts.model.repository_auth.AuthRepository
+import pt.project.logincontacts.dtos.login_auth_model.LoginAuth
+import pt.project.logincontacts.model.repository_auth.AuthRepositoryImpl
 import pt.project.logincontacts.network.sealed_response.Response
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor (private val repository: AuthRepository) : ViewModel() {
+class LoginViewModel @Inject constructor (private val repositoryImpl: AuthRepositoryImpl) : ViewModel() {
 
     private val _accessKeyRes:MutableLiveData<Response<AuthData>> = MutableLiveData()
     val accessKeyRes: LiveData<Response<AuthData>>
@@ -29,14 +28,13 @@ class LoginViewModel @Inject constructor (private val repository: AuthRepository
 
 
     fun getChallenge(
-        operation: String,
         username : String
     ) = viewModelScope.launch {
-        repository.getChallenge(operation,username).let {
+        repositoryImpl.getChallenge(username).let {
             if(it.isSuccessful){
                 if(it.body()!!.success){
                     _accessKeyRes.postValue(Response.Success(it.body()!!))
-                    _tokenMD5.postValue(repository.getmd5(it.body()!!.result.token+ACCESS_KEY))
+                    _tokenMD5.postValue(repositoryImpl.getmd5(it.body()!!.result.token+ACCESS_KEY))
                     Log.d("TAG", "getChallenge: ")
                 }else{
                     _accessKeyRes.postValue(Response.Failure(true,null,null))
@@ -47,13 +45,12 @@ class LoginViewModel @Inject constructor (private val repository: AuthRepository
         }
 
     fun getLogin(
-        operation: String,
         username: String,
         accesskey: String
     ) = viewModelScope.launch {
-        Log.d("TAG", "getLogin: "+operation+username+accesskey)
-        repository.getLogin(operation,username,accesskey).let {
+        repositoryImpl.getLogin(username,accesskey).let {
             if(it.isSuccessful){
+                    repositoryImpl.insertDB(it.body()!!.result)
                     _loginRes.postValue(Response.Success(it.body()!!))
                 }else{
                     _loginRes.postValue(Response.Failure(it.isSuccessful,null,it.errorBody()))

@@ -1,8 +1,11 @@
 package pt.project.logincontacts.di
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.*
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
-import androidx.viewbinding.BuildConfig
+
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -11,6 +14,7 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import pt.project.crm_pruebatecnica.constants.Constants.Companion.BASE_URL
+import pt.project.logincontacts.BuildConfig
 import pt.project.logincontacts.database.DBHandler
 import pt.project.logincontacts.network.APIRequest
 import retrofit2.Retrofit
@@ -61,5 +65,5 @@ object AppModule{
     @Singleton
     fun provideApi(retrofit: Retrofit):APIRequest =
         retrofit.create(APIRequest::class.java)
-}
 
+}

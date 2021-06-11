@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+<Transition
+        app:constraintSetEnd="@+id/end"
+        app:constraintSetStart="@id/start"
+        app:duration="300">
+        <OnClick
+            app:clickAction="toggle"
+            app:targetId="@id/fav"
+            />
+
+        <KeyFrameSet>
+            <KeyAttribute
+                app:motionTarget="@+id/fav"
+                app:framePosition="1"
+                android:scaleX="1"
+                android:scaleY="1"/>
+            <KeyAttribute
+                android:scaleX="1.13"
+                android:scaleY="1.13"
+                app:framePosition="1"
+                app:motionTarget="@+id/fav" />
+            <KeyAttribute
+                android:scaleX="1.15"
+                android:scaleY="1.15"
+                app:framePosition="1"
+                app:motionTarget="@+id/fav" />
+
+        </KeyFrameSet>
+    </Transition>
+
+    <ConstraintSet android:id="@+id/start">
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/end">
+    </ConstraintSet>
+</MotionScene>

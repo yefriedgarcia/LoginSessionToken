@@ -1,5 +1,6 @@
 package pt.project.logincontacts.view.fragments.login
 
+import android.content.Intent
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
@@ -9,11 +10,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
+import pt.project.logincontacts.R
 
 import pt.project.logincontacts.databinding.LoginFragmentBinding
 
 import pt.project.logincontacts.network.sealed_response.Response
+import pt.project.logincontacts.view.activities.HomeActivity
 import pt.project.logincontacts.viewmodels.login.LoginViewModel
 
 @AndroidEntryPoint
@@ -35,11 +39,22 @@ class Login : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val viewModel by activityViewModels<LoginViewModel>()
 
+        viewModel.getChallenge("prueba")
         viewModel.loginRes.observe(viewLifecycleOwner, Observer {
             when (it) {
                 is Response.Success -> {
-                    binding.etAccessKey.error = it.value.error.code
-                    Log.d("TAG", "onViewCreated:" + it.value.error.code)//.value.success)
+                   // binding.etAccessKey.error = it.value.success
+                    if(it.value.success){
+
+                        activity.let {
+                            it?.startActivity(Intent(requireContext(), HomeActivity::class.java))
+                            it?.finish()
+                        }
+                    }
+
+                  //  findNavController().navigate(R.id.action_login_to_homeActivity)
+
+                    Log.d("TAG", "onViewCreated:" + it.value.result)//.value.success)
                 }
                 is Response.Failure -> {
                     Log.d("TAG", "onViewCreated: " + it.isNetworkError)
@@ -62,10 +77,9 @@ class Login : Fragment() {
         })
 
         binding.apply {
-            btnToken.setOnClickListener { viewModel.getChallenge("getchallenge", "prueba") }
+            btnToken.setOnClickListener { viewModel.getChallenge("prueba") }
             btnLogin.setOnClickListener {
                 viewModel.getLogin(
-                    "login",
                     etUsername.text.toString(),
                     etAccessKey.text.toString()
                 )
